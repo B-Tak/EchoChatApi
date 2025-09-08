@@ -1,4 +1,4 @@
-using EchoChatAPI.Services;
+using EchoChatApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-namespace EchoChatApi.Controllers;
+namespace EchoChatApi.Models;
 
 public class RegisterRequest
 {

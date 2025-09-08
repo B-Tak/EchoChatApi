@@ -1,5 +1,5 @@
-using EchoChatAPI.Models;
-using EchoChatAPI.Services;
+using EchoChatApi.Models;
+using EchoChatApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EchoChatApi.Controllers;
