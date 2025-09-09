@@ -12,13 +12,13 @@ public class AuthController : ControllerBase
 
     public AuthController(AuthService authService)
     {
-        _authService = new AuthService();
+        _authService = authService;
     }
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        var success = _authService.Login(request.Username, request.Password);
+        var success = _authService.Login(request.Email, request.Password);
         if (success)
             return Ok(new { message = "Login successful" });
         return Unauthorized(new { message = "Invalid username or password" });
