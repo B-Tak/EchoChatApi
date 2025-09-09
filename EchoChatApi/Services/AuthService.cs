@@ -6,14 +6,14 @@ public class AuthService
 {
     private readonly string _connectionString = "server=localhost;uid=root;pwd=bit_academy;database=echochat";
 
-    public bool Login(string username, string password)
+    public bool Login(string email, string password)
     {
         using var connection = new MySqlConnection(_connectionString);
         connection.Open();
 
-        string query = "SELECT COUNT(*) FROM users WHERE username = @username AND password = @password";
+        string query = "SELECT COUNT(*) FROM users WHERE email = @email AND password = @password";
         using var cmd = new MySqlCommand(query, connection);
-        cmd.Parameters.AddWithValue("@username", username);
+        cmd.Parameters.AddWithValue("@email", email);
         cmd.Parameters.AddWithValue("@password", password);
 
         var result = Convert.ToInt32(cmd.ExecuteScalar());
@@ -41,5 +41,11 @@ public class AuthService
         insertCmd.ExecuteNonQuery();
 
         return true;
+    }
+
+    protected string HashPassword(string password)
+    {
+        // Implement password hashing here
+        return password; // Placeholder, do not use in production
     }
 }
