@@ -15,16 +15,16 @@ public class MessageController : ControllerBase
         _messageService = messageService;
     }
 
-    [HttpPost]
+    [HttpPost("message")]
     public IActionResult PostMessage([FromBody] MessageRequest request)
     {
-        if (request == null || request.UserId <= 0 || string.IsNullOrWhiteSpace(request.Message))
+        if (request == null || string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Content))
             return BadRequest(new { message = "Invalid message data." });
-        _messageService.SaveMessage(request.UserId, request.Message);
+        _messageService.SaveMessage(request.Username, request.Content);
         return Ok(new { message = "Message saved successfully." });
     }
 
-    [HttpGet]
+    [HttpGet("messages")]
     public IActionResult GetMessages()
     {
         var messages = _messageService.GetMessages();

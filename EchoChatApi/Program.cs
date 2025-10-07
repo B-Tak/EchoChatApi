@@ -5,6 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Register services
 builder.Services.AddSingleton<AuthService>();
 
+// Message services
+builder.Services.AddSingleton<MessageService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
