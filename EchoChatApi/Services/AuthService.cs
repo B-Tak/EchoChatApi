@@ -1,3 +1,6 @@
+using System;
+using System.Security.Cryptography;
+using System.Text;
 using MySql.Data.MySqlClient;
 
 namespace EchoChatApi.Services;
@@ -11,13 +14,15 @@ public class AuthService
         using var connection = new MySqlConnection(_connectionString);
         connection.Open();
 
-        string query = "SELECT COUNT(*) FROM users WHERE email = @email AND password = @password";
+        string query = "SELECT password FROM users WHERE email = @email";
         using var cmd = new MySqlCommand(query, connection);
         cmd.Parameters.AddWithValue("@email", email);
-        cmd.Parameters.AddWithValue("@password", password);
 
-        var result = Convert.ToInt32(cmd.ExecuteScalar());
-        return result > 0;
+        var storedHash = cmd.ExecuteScalar() as string;
+        if (string.IsNullOrEmpty(storedHash))
+            return false;
+
+        return VerifyPassword(password, storedHash);
     }
 
     public bool Register(string email, string username, string password)
@@ -32,12 +37,15 @@ public class AuthService
         if (Convert.ToInt32(checkCmd.ExecuteScalar()) > 0)
             return false;
 
+        // Hash the password (no salt, per request)
+        string hashedPassword = HashPassword(password);
+
         // Insert new user
         string insertQuery = "INSERT INTO users (email, username, password) VALUES (@email, @username, @password)";
         using var insertCmd = new MySqlCommand(insertQuery, connection);
         insertCmd.Parameters.AddWithValue("@email", email);
         insertCmd.Parameters.AddWithValue("@username", username);
-        insertCmd.Parameters.AddWithValue("@password", password);
+        insertCmd.Parameters.AddWithValue("@password", hashedPassword);
         insertCmd.ExecuteNonQuery();
 
         return true;
@@ -45,7 +53,15 @@ public class AuthService
 
     protected string HashPassword(string password)
     {
-        // Implement password hashing here
-        return password; // Placeholder, do not use in production
+        using var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(password);
+        var hash = sha256.ComputeHash(bytes);
+        return Convert.ToBase64String(hash);
+    }
+
+    private bool VerifyPassword(string password, string storedHash)
+    {
+        var hashedInput = HashPassword(password);
+        return string.Equals(hashedInput, storedHash, StringComparison.Ordinal);
     }
 }
