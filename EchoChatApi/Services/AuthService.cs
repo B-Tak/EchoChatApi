@@ -37,7 +37,7 @@ public class AuthService
         if (Convert.ToInt32(checkCmd.ExecuteScalar()) > 0)
             return false;
 
-        // Hash the password (no salt, per request)
+        // Hash the password
         string hashedPassword = HashPassword(password);
 
         // Insert new user
